@@ -1,0 +1,15 @@
+import pandas as pd
+import numpy as np
+
+# github의 자동차 생산 자료를 읽어들인다
+path = 'https://github.com/dongupak/DataML/raw/main/csv/'
+file = path+'vehicle_prod.csv'
+df = pd.read_csv(file, index_col=0)
+
+# 데이터 프레임에서 국가명을 제외한 숫자 평균을 구하여 Average로 명명
+averages = df.select_dtypes(np.number).mean().rename('Average')
+
+# 평균 값을 DataFrame에 추가 (concat을 사용)
+average_df = pd.concat([df, averages.to_frame().T])
+
+average_df
