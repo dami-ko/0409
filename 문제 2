@@ -1,0 +1,46 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 파일 경로 및 데이터 읽기
+path = 'https://github.com/dongupak/DataML/raw/main/csv/' 
+weather_file = path + 'weather.csv'
+weather = pd.read_csv(weather_file, encoding='CP949')
+
+# '일시' 열을 Datetime으로 변환 후 연도만 추출
+weather['일시'] = pd.to_datetime(weather['일시'])
+weather['year'] = weather['일시'].dt.year
+
+# 월 추출
+weather['month'] = weather['일시'].dt.month
+
+# 월별 평균 기온 계산
+monthly_temp = [None for x in range(12)]
+monthly_wind = [0 for x in range(12)]
+monthly_avg_wind = [0 for x in range(12)]  # 월별 평균 풍속 저장할 리스트
+
+for i in range(12):
+    monthly_temp[i] = weather[weather['month'] == i + 1]  # 각 월의 데이터 필터링
+    monthly_wind[i] = monthly_temp[i]['평균기온'].mean()  # 월별 평균 기온 계산
+    monthly_avg_wind[i] = monthly_temp[i]['평균풍속'].mean()  # 월별 평균 풍속 계산
+
+# 월별 기온과 월별 평균 풍속을 바 차트로 출력
+months = np.arange(1, 13)
+
+fig, ax1 = plt.subplots()
+
+# 월별 기온 그래프
+ax1.bar(months - 0.2, monthly_wind, width=0.4, color='green', label='Average Temperature')
+ax1.set_xlabel('Month')
+ax1.set_ylabel('Average Temperature', color='green')
+ax1.tick_params(axis='y', labelcolor='green')
+
+# 두 번째 y축을 생성하여 월별 평균 풍속 그래프
+ax2 = ax1.twinx()
+ax2.plot(months, monthly_avg_wind, color='blue', label='Average Wind Speed', marker='o')
+ax2.set_ylabel('Average Wind Speed', color='blue')
+ax2.tick_params(axis='y', labelcolor='blue')
+
+plt.title('Average Temperature and Wind Speed by Month')
+fig.tight_layout()  # 레이아웃을 자동으로 조정하여 겹치지 않도록 함
+plt.show()
